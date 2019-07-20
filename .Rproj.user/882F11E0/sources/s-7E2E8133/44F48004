@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1563635304212.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "44F48004",
+    "lastKnownWriteTime" : 1563644622,
+    "last_content_update" : 1563644622446,
+    "path" : "~/Git/rabm/rabm/R/extract_all.R",
+    "project_path" : "R/extract_all.R",
+    "properties" : {
+        "cursorPosition" : "53,0",
+        "scrollLine" : "48",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 6,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

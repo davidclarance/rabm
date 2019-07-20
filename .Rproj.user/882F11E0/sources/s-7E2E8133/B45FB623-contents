@@ -1,0 +1,62 @@
+library(tidyverse)
+library(httr)
+library(xml2)
+library(glue)
+
+
+# extract_observers -------------------------------------------------------
+
+
+extract_observers <- function(observer_numbers,
+                              start_date = '2019-01-01',
+                              end_date = '2019-02-01',
+                              region_type = 'country',
+                              region_id = 'kenya',
+                              return_type = 'data',
+                              return_format = 'CSV') {
+
+  # requirements on inputs
+
+  if (is.na(as.Date(start_date, format = "%Y-%m-%d"))) {
+    stop(message = "start_date is incorrectly specified. Please use the YYYY-MM-DD format")
+
+  }
+
+
+  if (is.na(as.Date(end_date, format = "%Y-%m-%d"))) {
+    stop(message = "end_date is incorrectly specified. Please use the YYYY-MM-DD format")
+
+  }
+
+
+  region_type = tolower(region_type)
+  region_id = tolower(region_id)
+  return_type = tolower(return_type)
+
+
+
+  # pull for single observer number
+  pull_for_observer <- function(observer_number) {
+    print(glue::glue("Pulling data for {observer_number}"))
+    readr::read_csv(
+      glue::glue(
+        "http://api.adu.org.za/sabap2/v2/R/{start_date}/{end_date}/{region_type}/{region_id}/{return_type}/observers/{observer_number}?format={return_format}"
+      ),
+      col_types = cols()
+    )
+  }
+
+
+  # pull many observer numbers
+  purrr::map_df(observer_numbers, pull_for_observer)
+
+
+}
+
+
+extract_observers(c('10723', '40147'))
+extract_observers('10723')
+
+
+
+

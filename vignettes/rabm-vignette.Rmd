@@ -1,0 +1,24 @@
+---
+title: "`rabm`: An R interface to the Africa Bird Map"
+author: "David Clarance"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{rabm}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+# Introduction
+
+`rabm` is a library in R that provides an interface to the Africa Bird Map data. 
+
+
