@@ -31,6 +31,9 @@ The package has three primary extraction functions:
 For all three functions, a **time frame and geographical region** must be specified. 
 
 
+In the following sections, we go through all three functions describing their inputs and behavior and providing once case study each. If you find errors, please contact [David Clarance](mailto:dclarance@gmail.com) or make a pull request on Github.
+
+
 
 # Extracting Observer Data
 

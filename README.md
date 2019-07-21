@@ -3,7 +3,7 @@
 
 
 <p align="center">
-  <img src="https://github.com/davidclarance/rabm/rabmhex.png" alt="drawing" width="200"/>
+  <img src="https://raw.githubusercontent.com/davidclarance/rabm/master/rabmhex.png" alt="drawing" width="200"/>
 </p>
 
 
