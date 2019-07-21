@@ -5,12 +5,11 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>
-<code>rabm</code>: An R interface to the Africa Bird Map • rabm</title>
+<title>Extracting data with <code>rabm</code> • rabm</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="&lt;code&gt;rabm&lt;/code&gt;: An R interface to the Africa Bird Map">
+<script src="../pkgdown.js"></script><meta property="og:title" content="Extracting data with &lt;code&gt;rabm&lt;/code&gt;">
 <meta property="og:description" content="">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -54,7 +53,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/rabm-vignette.html">`rabm`: An R interface to the Africa Bird Map</a>
+      <a href="../articles/rabm-vignette.html">Extracting data with `rabm`</a>
     </li>
   </ul>
 </li>
@@ -71,11 +70,11 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1>
-<code>rabm</code>: An R interface to the Africa Bird Map</h1>
+      <h1>Extracting data with <code>rabm</code>
+</h1>
                         <h4 class="author">David Clarance</h4>
             
-            <h4 class="date">2019-07-20</h4>
+            <h4 class="date">2019-07-21</h4>
       
       
       <div class="hidden name"><code>rabm-vignette.Rmd</code></div>
@@ -87,7 +86,412 @@
 <div id="introduction" class="section level1">
 <h1 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h1>
-<p><code>rabm</code> is a library in R that provides an interface to the Africa Bird Map data.</p>
+<p><code>rabm</code> makes extracting data from the Africa Bird Map easier and safer. It is built off an API developed and maintained by <a href="mailto:michael.brooks@uct.ac.za">Michael Brooks</a>.</p>
+<p>The package has three primary extraction functions:</p>
+<ul>
+<li>
+<code>extract_observers</code> helps to extract records using observers as the filtering unit.</li>
+<li>
+<code>extract_species</code> helps to extract records using species as the filtering unit.</li>
+<li>
+<code>extract_all</code> is meant to extract data without filtering for specific observers and species.</li>
+</ul>
+<p>For all three functions, a <strong>time frame and geographical region</strong> must be specified.</p>
+</div>
+<div id="extracting-observer-data" class="section level1">
+<h1 class="hasAnchor">
+<a href="#extracting-observer-data" class="anchor"></a>Extracting Observer Data</h1>
+<p>To submit to the Africa Bird Map, an ‘observer’ must <a href="http://birdmap.adu.org.za/register">register</a> an account. On doing so an observer number (also called citizen science number) is allocated. This number is the basis of quering the database for records pertaining to an observer.</p>
+<div id="anatomy-of-the-function" class="section level3">
+<h3 class="hasAnchor">
+<a href="#anatomy-of-the-function" class="anchor"></a>Anatomy of the function</h3>
+<p>We begin by taking a quick dive into the function:</p>
+<pre><code>extract_observers(   &lt;----- This is the function name. It doesn't change.
+  observer_numbers,  &lt;----- Input the observer number or numbers. You can find these on the website.
+  start_date,        &lt;----- What date do you want to draw records starting from? The format is YYYY-MM-DD.
+  end_date,          &lt;----- What date do you want to draw records ending on? The format is YYYY-MM-DD. 
+  region_type,       &lt;----- Here you specify what kind of regions you're working with (eg: country, pentad).
+  region_id,         &lt;----- Here you specify the value the region takes (eg: kenya, 0310_4000)
+  return_type,       &lt;----- For more advanced use. You don't need to specify this. 
+  return_format      &lt;----- For more advanced use. You don't need to specify this. 
+)
+</code></pre>
+<p>Generally, users need to specify the observer number or numbers, the range they want to pull records in and the regions for which they’d like to pull records.</p>
+<p>The definitions of the arguments are given below in detail:</p>
+<ul>
+<li>
+<code>observer_numbers</code> A character or a vector of characters that represent the ADU number or numbers that you want to query the database for. Example: observer_numbers = ‘10723’ or observer_numbers = c(‘10723’, ‘40147’)</li>
+<li>
+<code>start_date</code> A character representing the start date from which you want to query the database. It must be in the YYYY-MM-DD format. Defaults to 1 Jan,2019. Example: ‘2019-01-26’.</li>
+<li>
+<code>end_date</code> A character representing the end date to which you want to query the database. It must be in the YYYY-MM-DD format. Defaults to 1 Feb, 2019. Example: ‘2019-02-26’.</li>
+<li>
+<code>region_type</code> Can take one of the following types: country, pentad, group, qdgc. Default is ‘country’</li>
+<li>
+<code>region_id</code> Has to be co-defined with <code>region_type</code>. That is, it is an instantiation of the <code>region_type</code>. For instance if the <code>region_type</code> = ‘country’, then the <code>region_id</code> = ‘kenya’. Or if <code>region_type</code> = ‘pentad’, then <code>region_id</code> = ‘3355_1825’. Default is ‘kenya’.</li>
+<li>
+<code>return_type</code> There are two options, ‘data’ and ‘count’. ‘data’ is the actual records submitted to the africa bird map. ‘count’ return a count of the rows. Default is ‘data’.</li>
+<li>
+<code>return_format</code> Default s ‘CSV’, though the API default is ‘JSON’</li>
+</ul>
+<p>Depending on the return_format, the function will return a dataframe with the following:</p>
+<ol style="list-style-type: decimal">
+<li>
+<code>return_type = data</code> A tidy dataframe is returned with the records that fall within the specification defined.</li>
+<li>
+<code>return_type = count</code> A tidy dataframe is returns with the number of rows that will be produced if the return_type was to be specified as ‘data’.</li>
+</ol>
+</div>
+<div id="case-study-exploring-doris-schaules-contrbution" class="section level3">
+<h3 class="hasAnchor">
+<a href="#case-study-exploring-doris-schaules-contrbution" class="anchor"></a>Case study: Exploring Doris Schaule’s contrbution</h3>
+<p>How would this work in practice?</p>
+<p>Doris Schaule is one of Kenya’s most prolific mapper. Let’s explore some of her contributions to the Atlas in Kenya. It must be noted that Doris has contributed records outside Kenya (even in Germany!!), however for purposes of this exercise we will only focus on the records generated in Kenya.</p>
+<p>The first step is to obtain Doris’ observer number. I did this by asking her. In theory, it is possible to build a function to get this number, however for privacy reasons I have refrained from doing so. <strong>Her number is 12939.</strong></p>
+<p>We first begin by loading packages required.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># first load the package</span>
+<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(rabm) <span class="co"># to pull data from the Africa Bird Atlas</span>
+<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(dplyr) <span class="co"># to analyze some of the data pulled</span>
+<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(magrittr) <span class="co"># to pipe commands easily</span>
+<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(ggplot2) <span class="co"># to to plot some of the data</span>
+<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(lubridate) <span class="co"># for working with dates</span>
+<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(tidyr) <span class="co"># more data manipulation functions</span></code></pre></div>
+<p>Once that’s done, we’ll draw the raw data (each row is a record) for Doris. We’ll use this data to do some exploratory analysis.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">
+<span class="co"># now get all records from 2007 to present date for Doris</span>
+
+doris_raw_records &lt;-<span class="st"> </span><span class="kw"><a href="../reference/extract_observers.html">extract_observers</a></span>(
+  
+  <span class="dt">observer_numbers =</span> <span class="st">'12939'</span>,
+  <span class="dt">start_date =</span> <span class="st">'2007-01-01'</span>,
+  <span class="dt">end_date =</span> <span class="st">'2019-07-01'</span>,
+  <span class="dt">region_type =</span> <span class="st">'country'</span>,
+  <span class="dt">region_id =</span> <span class="st">'kenya'</span>
+  
+)
+<span class="co">#&gt; Pulling data for 12939</span></code></pre></div>
+<p>Now that we have the data, let’s take a look at how Doris has contributed to the bird atlas.</p>
+<p><strong>How many records has Doris contributed?</strong></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(doris_raw_records)
+<span class="co">#&gt; [1] 20228</span></code></pre></div>
+<p>As we can see above, Doris has contributed 20228 records. In reality, these will be more since some records might not have been vetted at the time of publishing this document.</p>
+<p><strong>How many full protocol cards has Doris contributed?</strong></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html">n_distinct</a></span>(doris_raw_records<span class="op">$</span>CardNo)
+<span class="co">#&gt; [1] 446</span></code></pre></div>
+<p><strong>How many pentads has Doris submitted FPs for?</strong></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html">n_distinct</a></span>(doris_raw_records<span class="op">$</span>Pentad)
+<span class="co">#&gt; [1] 68</span></code></pre></div>
+<p>Again, there is a possibility that Doris has contributed far more. However, these will only enter the database once they have been vetted.</p>
+<p><strong>How many distinct species has Doris recorded in Kenya?</strong></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html">n_distinct</a></span>(doris_raw_records<span class="op">$</span>Spp)
+<span class="co">#&gt; [1] 531</span></code></pre></div>
+<p><strong>How has Doris’ contributions evolved over time?</strong></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">doris_fp_per_year &lt;-<span class="st"> </span>doris_raw_records <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="co"># first find the number of cards recorded per year</span>
+<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">YearOfRecord =</span> <span class="kw"><a href="http://lubridate.tidyverse.org/reference/year.html">year</a></span>(StartDate)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span>(YearOfRecord) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarize</a></span>(
+    
+    <span class="dt">CardsRecorded =</span> <span class="kw"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html">n_distinct</a></span>(CardNo)
+    
+  ) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/group_by.html">ungroup</a></span>()
+
+
+<span class="co"># put the information into a nice graph</span>
+doris_fp_per_year  <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="kw"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">x =</span> YearOfRecord, <span class="dt">y =</span> CardsRecorded)) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_light</a></span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html">geom_col</a></span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span>(<span class="dt">title =</span> <span class="st">"FP cards submitted by Doris by year"</span>, 
+       <span class="dt">caption =</span> <span class="st">"Note: This graph does not contain FP cards that have not been vetted"</span>) </code></pre></div>
+<p><img src="rabm-vignette_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
+<p>If this isn’t impressive enough, let’s see how Doris’ contribution compares to all the other contributors in Kenya.</p>
+<p>Let’s first get all records for Kenya. Don’t worry if you don’t recognize this function. We’ll get back to it later in the article.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">all_kenya_records &lt;-<span class="st"> </span><span class="kw"><a href="../reference/extract_all.html">extract_all</a></span>(
+  
+  <span class="dt">start_date =</span> <span class="st">"2007-01-01"</span>,
+  <span class="dt">end_date =</span> <span class="st">"2019-07-01"</span>,
+  <span class="dt">region_type =</span> <span class="st">"country"</span>, 
+  <span class="dt">region_id =</span> <span class="st">"kenya"</span>
+  
+)</code></pre></div>
+<p>Now let’s get the number of FP records submitted each year for all of Kenya but all observers.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">all_fp_per_year &lt;-<span class="st"> </span>all_kenya_records <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">YearOfRecord =</span> <span class="kw"><a href="http://lubridate.tidyverse.org/reference/year.html">year</a></span>(StartDate)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span>(YearOfRecord) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarize</a></span>(
+    
+    <span class="dt">CardsRecorded =</span> <span class="kw"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html">n_distinct</a></span>(CardNo)
+    
+  ) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/group_by.html">ungroup</a></span>()</code></pre></div>
+<p><strong>How do Doris’ records figure in Kenya’s contributions?</strong></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">doris_fp_per_year <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/select.html">rename</a></span>(<span class="st">"DorisFPCards"</span> =<span class="st"> "CardsRecorded"</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/join.html">left_join</a></span>(all_fp_per_year, <span class="dt">by =</span> <span class="st">"YearOfRecord"</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/select.html">rename</a></span>(<span class="st">"AllFPCards"</span> =<span class="st"> "CardsRecorded"</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">OtherFPCards =</span> AllFPCards <span class="op">-</span><span class="st"> </span>DorisFPCards) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">PercentageContributed =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Round">round</a></span>((DorisFPCards <span class="op">/</span><span class="st"> </span>AllFPCards)<span class="op">*</span><span class="dv">100</span>, <span class="dv">2</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="kw"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">x =</span> YearOfRecord, <span class="dt">y =</span> PercentageContributed)) <span class="op">+</span>
+<span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html">geom_col</a></span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span>(<span class="st">"Percentage of Doris' contributions to Kenyan records"</span>, 
+          <span class="dt">subtitle =</span> <span class="st">"There are 310 recorded observers in Kenya"</span>)</code></pre></div>
+<p><img src="rabm-vignette_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
+<p>Doris has single handedly contributed ~10% of all Kenyan records.</p>
+</div>
+</div>
+<div id="exploring-species-data" class="section level1">
+<h1 class="hasAnchor">
+<a href="#exploring-species-data" class="anchor"></a>Exploring species data</h1>
+<p>Each species recorded in the Africa Bird Atlas is assigned a species ID, referred to in the data as <code>Spp</code>. To pull data for a species, you’ll need to know it’s species Ids. There are two ways to figure out the <code>Spp</code> for a particular species.</p>
+<div id="finding-species-ids-spp" class="section level3">
+<h3 class="hasAnchor">
+<a href="#finding-species-ids-spp" class="anchor"></a>Finding species Ids (Spp)</h3>
+<ul>
+<li>If you want to quickly pull data for one species, I would recommend using the website to search and filter the Spp. Go to the species page <a href="http://birdmap.adu.org.za/species">here</a>. Type in the common or scientific name for the species and use the number that appears.<br>
+</li>
+<li>However, if you’re search for multiple species, the process can be a bit tedious. To make the process easier, you can use the library itself.</li>
+</ul>
+<p>To find ids for multiple species, the first step is to pull the species list for a particular country. This can be done by using <code><a href="../reference/get_species_list.html">get_species_list()</a></code> function. This function only takes one argument: the name of the country.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># get species list for nigeria</span>
+nigeria_species_list &lt;-<span class="st"> </span><span class="kw"><a href="../reference/get_species_list.html">get_species_list</a></span>(<span class="st">"nigeria"</span>)
+
+nigeria_species_list
+<span class="co">#&gt; # A tibble: 923 x 5</span>
+<span class="co">#&gt;      Spp Common_group   Common_species           Genus         Species     </span>
+<span class="co">#&gt;    &lt;int&gt; &lt;chr&gt;          &lt;chr&gt;                    &lt;chr&gt;         &lt;chr&gt;       </span>
+<span class="co">#&gt;  1  1109 Alethe         Brown-chested            Alethe        poliocephala</span>
+<span class="co">#&gt;  2  2540 Alethe         Fire-crested             Pseudalethe   castanea    </span>
+<span class="co">#&gt;  3  2660 Ant-thrush     White-tailed             Neocossyphus  poensis     </span>
+<span class="co">#&gt;  4  2650 Anteating-chat Northern                 Myrmecocichla aethiops    </span>
+<span class="co">#&gt;  5  1144 Antpecker      Woodhouse's (Red-headed) Parmoptila    woodhousei  </span>
+<span class="co">#&gt;  6   622 Apalis         Bar-throated             Apalis        thoracica   </span>
+<span class="co">#&gt;  7  3078 Apalis         Black-capped             Apalis        nigriceps   </span>
+<span class="co">#&gt;  8  3084 Apalis         Black-collared           Apalis        pulchra     </span>
+<span class="co">#&gt;  9  3074 Apalis         Black-throated           Apalis        jacksoni    </span>
+<span class="co">#&gt; 10  1099 Apalis         Buff-throated            Apalis        rufogularis </span>
+<span class="co">#&gt; # ... with 913 more rows</span></code></pre></div>
+<p>Now let’s say we wanted to find the species ids for a few common birds (sorry I don’t know my Nigerian birds well enough!). We’re interested in finding cattle egret, laughing dove, speckled pigeons.</p>
+<p>To do this we’ll use the <code><a href="../reference/find_species.html">find_species()</a></code> function. This function takes the species list and species names. You can use both common and scientific names.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">interesting_species_names &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"ibis bubulcus"</span>, <span class="st">"laughing dove"</span>, <span class="st">"speckled pigeon"</span>)
+
+interesting_species_ids &lt;-<span class="st"> </span><span class="kw"><a href="../reference/find_species.html">find_species</a></span>(<span class="dt">species_list =</span> nigeria_species_list, 
+             <span class="dt">species_names =</span> interesting_species_names)
+
+interesting_species_ids
+<span class="co">#&gt; # A tibble: 3 x 6</span>
+<span class="co">#&gt;     Spp Common_group Common_species Genus   Species  SearchColumn          </span>
+<span class="co">#&gt;   &lt;int&gt; &lt;chr&gt;        &lt;chr&gt;          &lt;chr&gt;   &lt;chr&gt;    &lt;chr&gt;                 </span>
+<span class="co">#&gt; 1    61 Egret        Cattle         Bubulc~ ibis     egret cattle bubulcus~</span>
+<span class="co">#&gt; 2   317 Dove         Laughing       Strept~ senegal~ dove laughing strepto~</span>
+<span class="co">#&gt; 3   311 Pigeon       Speckled       Columba guinea   pigeon speckled colum~</span></code></pre></div>
+</div>
+<div id="anatomy-of-the-function-1" class="section level3">
+<h3 class="hasAnchor">
+<a href="#anatomy-of-the-function-1" class="anchor"></a>Anatomy of the function</h3>
+<p>We begin by taking a quick dive into the function:</p>
+<pre><code>extract_species(     &lt;----- This is the function name. It doesn't change.
+  species_ds,        &lt;----- Input the Spp. You can find these 
+  start_date,        &lt;----- What date do you want to draw records starting from? The format is YYYY-MM-DD.
+  end_date,          &lt;----- What date do you want to draw records ending on? The format is YYYY-MM-DD. 
+  region_type,       &lt;----- Here you specify what kind of regions you're working with (eg: country, pentad).
+  region_id,         &lt;----- Here you specify the value the region takes (eg: kenya, 0310_4000)
+  return_type,       &lt;----- For more advanced use. You don't need to specify this. 
+  return_format      &lt;----- For more advanced use. You don't need to specify this. 
+)
+</code></pre>
+<p>The definitions of the arguments are detailed below:</p>
+<ul>
+<li>
+<code>species_ids</code> A character or a vector of characters that represent the id or ids of the species. Example: observer_numbers = ‘10723’ or observer_numbers = c(‘10723’, ‘40147’)</li>
+<li>
+<code>start_date</code> A character representing the start date from which you want to query the database. It must be in the YYYY-MM-DD format. Defaults to 1 Jan,2019. Example: ‘2019-01-26’.</li>
+<li>
+<code>end_date</code> A character representing the end date to which you want to query the database. It must be in the YYYY-MM-DD format. Defaults to 1 Feb, 2019. Example: ‘2019-02-26’.</li>
+<li>
+<code>region_type</code> Can take one of the following types: country, pentad, group, qdgc. Default is ‘country’</li>
+<li>
+<code>region_id</code> Has to be co-defined with <code>region_type</code>. That is, it is an instantiation of the <code>region_type</code>. For instance if the <code>region_type</code> = ‘country’, then the <code>region_id</code> = ‘kenya’. Or if <code>region_type</code> = ‘pentad’, then <code>region_id</code> = ‘3355_1825’. Default is ‘kenya’.</li>
+<li>
+<code>return_type</code> There are two options, ‘data’ and ‘count’. ‘data’ is the actual records submitted to the africa bird map. ‘count’ return a count of the rows. Default is ‘data’.</li>
+<li>
+<code>return_format</code> Default is ‘CSV’, though the API default is ‘JSON’</li>
+</ul>
+<p>Depending on the return_format, the function will return a dataframe with the following: 1. <code>return_type = data</code> A tidy dataframe is returned with the records that fall within the specification defined. 2. <code>return_type = count</code> A tidy dataframe is returns with the number of rows that will be produced if the return_type was to be specified as ‘data’.</p>
+</div>
+<div id="case-study-cattle-egrets-in-nigeria" class="section level3">
+<h3 class="hasAnchor">
+<a href="#case-study-cattle-egrets-in-nigeria" class="anchor"></a>Case Study: Cattle Egrets in Nigeria</h3>
+<p>Cattle Egrets are commonly found across Nigeria. They are easy to identify and often appear on full protocol lists.</p>
+<p>We’ll first need to load the required packages. Since we have already loaded the packages, we won’t do it again.</p>
+<p>Let’s start by getting all raw records for cattle egrets.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cegret_raw_records &lt;-<span class="st"> </span><span class="kw"><a href="../reference/extract_species.html">extract_species</a></span>(
+  
+  <span class="dt">species_ids =</span> <span class="dv">61</span>,
+  <span class="dt">start_date =</span> <span class="st">'2007-01-01'</span>,
+  <span class="dt">end_date =</span> <span class="st">'2019-07-01'</span>,
+  <span class="dt">region_type =</span> <span class="st">'country'</span>,
+  <span class="dt">region_id =</span> <span class="st">'nigeria'</span>
+  
+)
+<span class="co">#&gt; Pulling data for 61</span></code></pre></div>
+<p><strong>How many times has the cattle egret been recorded in Nigeria</strong></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(cegret_raw_records)
+<span class="co">#&gt; [1] 1445</span></code></pre></div>
+<p><strong>How many pentads has the cattle egret been recorded in?</strong></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html">n_distinct</a></span>(cegret_raw_records<span class="op">$</span>Pentad)
+<span class="co">#&gt; [1] 962</span></code></pre></div>
+<p><strong>How many FP cards does the cattle egret appear in?</strong></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html">n_distinct</a></span>(cegret_raw_records<span class="op">$</span>CardNo)
+<span class="co">#&gt; [1] 1441</span></code></pre></div>
+<p><strong>By how many observers has the cattle egret been recorded?</strong></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html">n_distinct</a></span>(cegret_raw_records<span class="op">$</span>ObserverNo)
+<span class="co">#&gt; [1] 111</span></code></pre></div>
+<p><strong>How does the cattle egret figure against the Grey-backed Camaroptera?</strong></p>
+<p>First, lets get the species IDs for both.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">common_species &lt;-<span class="st"> </span><span class="kw"><a href="../reference/find_species.html">find_species</a></span>(<span class="dt">species_list =</span> nigeria_species_list, <span class="dt">species_names =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"cattle egret"</span>, <span class="st">"grey-backed camaroptera"</span>))
+
+common_species
+<span class="co">#&gt; # A tibble: 2 x 6</span>
+<span class="co">#&gt;     Spp Common_group Common_species Genus   Species SearchColumn           </span>
+<span class="co">#&gt;   &lt;int&gt; &lt;chr&gt;        &lt;chr&gt;          &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;                  </span>
+<span class="co">#&gt; 1    61 Egret        Cattle         Bubulc~ ibis    egret cattle bubulcus ~</span>
+<span class="co">#&gt; 2   628 Camaroptera  Grey-backed    Camaro~ brevic~ camaroptera grey-backe~</span></code></pre></div>
+<p>Now let’s pull data for both across all of Nigeria.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">common_raw_records &lt;-<span class="st"> </span><span class="kw"><a href="../reference/extract_species.html">extract_species</a></span>(
+  
+  <span class="dt">species_ids =</span> common_species<span class="op">$</span>Spp, 
+  <span class="dt">start_date =</span> <span class="st">'2007-01-01'</span>,
+  <span class="dt">end_date =</span> <span class="st">'2019-07-01'</span>,
+  <span class="dt">region_type =</span> <span class="st">'country'</span>,
+  <span class="dt">region_id =</span> <span class="st">'nigeria'</span>
+  
+)
+<span class="co">#&gt; Pulling data for 61</span>
+<span class="co">#&gt; Pulling data for 628</span></code></pre></div>
+<p>Let’s look at absolute occurence across years in Nigeria</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">common_raw_records <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="co"># first create a few columns needed</span>
+<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">YearOfRecording =</span> <span class="kw"><a href="http://lubridate.tidyverse.org/reference/year.html">year</a></span>(StartDate)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">CommonName =</span> glue<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/glue/topics/glue">glue</a></span>(<span class="st">"{Common_species} {Common_group}"</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="co"># find aggregates by year</span>
+<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span>(Spp, CommonName, YearOfRecording) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarize</a></span>(
+    
+    <span class="dt">AbsoluteOccurence =</span> <span class="kw"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html">n_distinct</a></span>(CardNo)
+    
+  ) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/group_by.html">ungroup</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="co"># make a plot</span>
+<span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="kw"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">x =</span> YearOfRecording, <span class="dt">y =</span> AbsoluteOccurence, <span class="dt">fill =</span> CommonName)) <span class="op">+</span>
+<span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_light</a></span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html">geom_col</a></span>(<span class="dt">position =</span> <span class="st">"dodge"</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span>(<span class="st">"Absolute number of records for two common species in Nigeria"</span>)</code></pre></div>
+<p><img src="rabm-vignette_files/figure-html/unnamed-chunk-20-1.png" width="700"></p>
+</div>
+</div>
+<div id="exploring-unfiltered-data" class="section level1">
+<h1 class="hasAnchor">
+<a href="#exploring-unfiltered-data" class="anchor"></a>Exploring unfiltered data</h1>
+<p>Very often you will require data across species and observers. This is where the <code>extract_all</code> function comes in use. This functions pulls all data for a specified date range and a specified region.</p>
+<div id="anatomy-of-the-function-2" class="section level3">
+<h3 class="hasAnchor">
+<a href="#anatomy-of-the-function-2" class="anchor"></a>Anatomy of the function</h3>
+<p>We begin by taking a quick dive into the function:</p>
+<pre><code>extract_all(         &lt;----- This is the function name. It doesn't change.
+  start_date,        &lt;----- What date do you want to draw records starting from? The format is YYYY-MM-DD.
+  end_date,          &lt;----- What date do you want to draw records ending on? The format is YYYY-MM-DD. 
+  region_type,       &lt;----- Here you specify what kind of regions you're working with (eg: country, pentad).
+  region_id,         &lt;----- Here you specify the value the region takes (eg: kenya, 0310_4000)
+  return_type,       &lt;----- For more advanced use. You don't need to specify this. 
+  return_format      &lt;----- For more advanced use. You don't need to specify this. 
+)
+</code></pre>
+<p>The definitions of the arguments are detailed below:</p>
+<ul>
+<li>
+<code>start_date</code> A character representing the start date from which you want to query the database. It must be in the YYYY-MM-DD format. Defaults to 1 Jan,2019. Example: ‘2019-01-26’.</li>
+<li>
+<code>end_date</code> A character representing the end date to which you want to query the database. It must be in the YYYY-MM-DD format. Defaults to 1 Feb, 2019. Example: ‘2019-02-26’.</li>
+<li>
+<code>region_type</code> Can take one of the following types: country, pentad, group, qdgc. Default is ‘country’</li>
+<li>
+<code>region_id</code> Has to be co-defined with <code>region_type</code>. That is, it is an instantiation of the <code>region_type</code>. For instance if the <code>region_type</code> = ‘country’, then the <code>region_id</code> = ‘kenya’. Or if <code>region_type</code> = ‘pentad’, then <code>region_id</code> = ‘3355_1825’. Default is ‘kenya’.</li>
+<li>
+<code>return_type</code> There are two options, ‘data’ and ‘count’. ‘data’ is the actual records submitted to the africa bird map. ‘count’ return a count of the rows. Default is ‘data’.</li>
+<li>
+<code>return_format</code> Default is ‘CSV’, though the API default is ‘JSON’</li>
+</ul>
+<p>Depending on the return_format, the function will return a dataframe with the following: 1. <code>return_type = data</code> A tidy dataframe is returned with the records that fall within the specification defined. 2. <code>return_type = count</code> A tidy dataframe is returns with the number of rows that will be produced if the return_type was to be specified as ‘data’.</p>
+</div>
+<div id="case-study-african-paradise-flycatchers" class="section level3">
+<h3 class="hasAnchor">
+<a href="#case-study-african-paradise-flycatchers" class="anchor"></a>Case study: African Paradise Flycatchers</h3>
+<p>It is known that Africa Paradise Flycatchers have both a resident population and a migrating population in Kenya. The question we ask here is: Are these two groups equally distributed across the country, or does the migratory population only migrate to specific parts of the country?</p>
+<p>To do this, we’ll look at data from two very well mapped pentads.</p>
+<ol style="list-style-type: decimal">
+<li><p>Pentad <code>0115_3645</code> is in the heart of Nairobi and contains the National Museums of Kenya. We call this the museum pentad.</p></li>
+<li><p>Pentad <code>0355_3940</code> is on the coast and is Doris’ home pentad. We call this the coast pentad.</p></li>
+</ol>
+<p>Both pentads have more than a 100 full protocol lists submitted.</p>
+<p>We first start by extract data for the two pentads.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">
+raw_museum &lt;-<span class="st"> </span><span class="kw"><a href="../reference/extract_all.html">extract_all</a></span>(
+  
+  <span class="dt">start_date =</span> <span class="st">'2007-01-01'</span>,
+  <span class="dt">end_date =</span> <span class="st">'2018-12-31'</span>,
+  <span class="dt">region_type =</span> <span class="st">'pentad'</span>,
+  <span class="dt">region_id =</span> <span class="st">'0115_3645'</span>
+  
+)
+
+raw_coast &lt;-<span class="st"> </span><span class="kw"><a href="../reference/extract_all.html">extract_all</a></span>(
+  
+  <span class="dt">start_date =</span> <span class="st">'2007-01-01'</span>,
+  <span class="dt">end_date =</span> <span class="st">'2018-12-31'</span>,
+  <span class="dt">region_type =</span> <span class="st">'pentad'</span>,
+  <span class="dt">region_id =</span> <span class="st">'0355_3940'</span>
+  
+)</code></pre></div>
+<p>An alternate way to do the same would be to pull all data for Kenya using <code>region_type = 'country'</code> and <code>region_id = kenya</code> and then filter for the two pentads. The method above is faster.</p>
+<p>Next we find the reporting rates for both pentads for each month.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">apf_museum_monthly &lt;-<span class="st"> </span>raw_museum <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">MonthOfRecording =</span> <span class="kw"><a href="http://lubridate.tidyverse.org/reference/month.html">month</a></span>(StartDate, <span class="dt">label =</span> <span class="ot">TRUE</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span>(MonthOfRecording) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarize</a></span>(
+    
+    <span class="dt">TotalCards =</span> <span class="kw"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html">n_distinct</a></span>(CardNo),
+    <span class="dt">TotalPresent =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sum">sum</a></span>(Spp <span class="op">==</span><span class="st"> </span><span class="dv">682</span>),
+    <span class="dt">RecordingRateMuseum =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Round">round</a></span>((TotalPresent <span class="op">/</span><span class="st"> </span>TotalCards)<span class="op">*</span><span class="dv">100</span>, <span class="dv">2</span>)
+    
+  ) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/group_by.html">ungroup</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(MonthOfRecording, <span class="dt">Museum =</span> RecordingRateMuseum)
+
+apf_coast_monthly &lt;-<span class="st"> </span>raw_coast <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">MonthOfRecording =</span> <span class="kw"><a href="http://lubridate.tidyverse.org/reference/month.html">month</a></span>(StartDate, <span class="dt">label=</span> <span class="ot">TRUE</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span>(MonthOfRecording) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarize</a></span>(
+    
+    <span class="dt">TotalCards =</span> <span class="kw"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html">n_distinct</a></span>(CardNo),
+    <span class="dt">TotalPresent =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sum">sum</a></span>(Spp <span class="op">==</span><span class="st"> </span><span class="dv">682</span>),
+    <span class="dt">RecordingRateCoast =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Round">round</a></span>((TotalPresent <span class="op">/</span><span class="st"> </span>TotalCards)<span class="op">*</span><span class="dv">100</span>, <span class="dv">2</span>)
+    
+  ) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/group_by.html">ungroup</a></span>() <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(MonthOfRecording, <span class="dt">Coast =</span> RecordingRateCoast)</code></pre></div>
+<p>Finally we produce a graph that displays these two.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">apf_museum_monthly <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/join.html">left_join</a></span>(., apf_coast_monthly, <span class="dt">by =</span> <span class="st">"MonthOfRecording"</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="https://tidyr.tidyverse.org/reference/gather.html">gather</a></span>(Location, ReportingRate, Museum<span class="op">:</span>Coast) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="kw"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">x =</span> MonthOfRecording, <span class="dt">y =</span> ReportingRate, <span class="dt">color =</span> Location, <span class="dt">group =</span>  Location)) <span class="op">+</span>
+<span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_light</a></span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span>(<span class="st">"Reporting rates for Africa Paradise Flycatcher in two pentads"</span>)</code></pre></div>
+<p><img src="rabm-vignette_files/figure-html/unnamed-chunk-23-1.png" width="700"></p>
+<p>This graph gives a solid indication that the migratory population goes through the coast. This comes with the caveat that this analysis is just meant to introduce the user to data extract and is not meant to be a statistically rigorous investigation.</p>
+</div>
 </div>
   </div>
 
@@ -97,6 +501,9 @@
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
 <li><a href="#introduction">Introduction</a></li>
+      <li><a href="#extracting-observer-data">Extracting Observer Data</a></li>
+      <li><a href="#exploring-species-data">Exploring species data</a></li>
+      <li><a href="#exploring-unfiltered-data">Exploring unfiltered data</a></li>
       </ul>
 </div>
       </div>
@@ -105,7 +512,7 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by The package maintainer.</p>
+  <p>Developed by David Clarance.</p>
 </div>
 
 <div class="pkgdown">
