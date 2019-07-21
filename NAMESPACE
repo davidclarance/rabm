@@ -1,2 +1,4 @@
 exportPattern("^[[:alpha:]]+")
-import(magrittr)
+
+importFrom(magrittr,"%>%")
+export("%>%")
