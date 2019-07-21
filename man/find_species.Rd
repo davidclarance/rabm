@@ -28,5 +28,4 @@ interesting_species <- c("drongo", "sunbird")
 # find interesting species in the species list
 find_species(species_list = kenya_list, species_name = interesting_species)
 
-
 }

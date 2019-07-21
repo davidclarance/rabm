@@ -17,7 +17,7 @@
 #' # find interesting species in the species list
 #' find_species(species_list = kenya_list, species_name = interesting_species)
 #'
-#'
+#' @import magrittr
 find_species <- function(species_list, species_names) {
   df_to_search <- species_list %>%
     dplyr::mutate(SearchColumn = as.character(tolower(
