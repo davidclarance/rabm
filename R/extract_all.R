@@ -11,6 +11,8 @@
 #' 1. `return_type = data` A tidy dataframe is returned with the records that fall within the specification defined.
 #' 2. `return_type = count` A tidy dataframe is returns with the number of rows that will be produced if the return_type was to be specified as 'data'.
 #'
+#' @export
+#'
 #' @examples
 #'
 #' # extract data for all of Kenya for Jan 2019

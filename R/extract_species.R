@@ -10,6 +10,8 @@
 #' @param return_type There are two options, 'data' and 'count'. 'data' is the actual records submitted to the africa bird map. 'count' return a count of the rows. Default is 'data'.
 #' @param return_format Default s 'CSV', though the API default is 'JSON'
 #'
+#' @export
+#'
 #' @return Depending on the return_format, the function will return a dataframe with the following:
 #' 1. `return_type = data` A tidy dataframe is returned with the records that fall within the specification defined.
 #' 2. `return_type = count` A tidy dataframe is returns with the number of rows that will be produced if the return_type was to be specified as 'data'.

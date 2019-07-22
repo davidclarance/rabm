@@ -4,6 +4,8 @@
 #'
 #' @return Dataframe with the species ids, common names and scientific names of species in the defined country. Not when a species is split, the old species ID is discontinued and two (or more) new species ids are created.
 #'
+#' @export
+#'
 #' @examples
 #'
 #' # get species list for Nigerian

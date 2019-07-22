@@ -1,6 +1,6 @@
 Package: rabm
 Type: Package
-Title: An interface to the Africa Bird Atlas data
+Title: An interface to the Africa Bird Atlas API
 Version: 0.1.0
 Author: David Clarance
 Maintainer: David Clarance <dclarance@gmail.com>

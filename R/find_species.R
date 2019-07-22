@@ -4,6 +4,7 @@
 #' @param species_names A character or a vector of characters to search for in a species list,
 #'
 #' @return A subset of the output of `species_list` that produces the best match for the `species_names` provided.
+#'
 #' @export
 #'
 #' @examples
