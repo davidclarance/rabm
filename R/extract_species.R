@@ -74,33 +74,32 @@ extract_species <- function(species_ids,
   return_type = tolower(return_type)
 
 
-  # get number of records to be returned
-
-  all_species = paste(species_ids, collapse = ",")
-
-  return_data_count <- readr::read_csv(
-    glue::glue(
-      "http://api.adu.org.za/sabap2/v2/R/{start_date}/{end_date}/{region_type}/{region_id}/count/species/{all_species}?format={return_format}"
-    ),
-    col_types = readr::cols()
-  )
-
-  if (return_data_count$records[1] > 250000) {
-    stop(message = "Your query returns more than 250,000 records. The API does not allow more than 250,000 records to be drawn at once. Please split your query.")
-
-  }
-
-
 
   # pull for single observer number
   pull_for_species <- function(species_id) {
-    print(glue::glue("Pulling data for {species_id}"))
-    readr::read_csv(
+
+    # get number of records to be returned
+    return_data_count <- readr::read_csv(
       glue::glue(
-        "http://api.adu.org.za/sabap2/v2/R/{start_date}/{end_date}/{region_type}/{region_id}/{return_type}/species/{species_id}?format={return_format}"
+        "http://api.adu.org.za/sabap2/v2/R/{start_date}/{end_date}/{region_type}/{region_id}/count/species/{species_id}?format={return_format}"
       ),
       col_types = readr::cols()
-    )
+    )$records
+
+    if ( return_data_count > 250000) {
+      stop(message = "Your query returns more than 250,000 records. The API does not allow more than 250,000 records to be drawn at once. Please split your query.")
+    }
+
+    if (return_data_count > 0){
+      print(glue::glue("Pulling data for {species_id}"))
+      readr::read_csv(
+        glue::glue(
+          "http://api.adu.org.za/sabap2/v2/R/{start_date}/{end_date}/{region_type}/{region_id}/{return_type}/species/{species_id}?format={return_format}"
+        ),
+        col_types = readr::cols()
+      )
+    }
+
   }
 
 
