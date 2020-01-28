@@ -55,17 +55,13 @@ extract_species <- function(species_ids,
                               return_type = 'data',
                               return_format = 'CSV') {
 
-  # requirements on inputs
 
+  # requirements on inputs
   if (is.na(as.Date(start_date, format = "%Y-%m-%d"))) {
     stop(message = "start_date is incorrectly specified. Please use the YYYY-MM-DD format")
-
   }
-
-
   if (is.na(as.Date(end_date, format = "%Y-%m-%d"))) {
     stop(message = "end_date is incorrectly specified. Please use the YYYY-MM-DD format")
-
   }
 
 
@@ -99,15 +95,10 @@ extract_species <- function(species_ids,
         col_types = readr::cols()
       )
     }
-
   }
 
 
   # pull many observer numbers
   purrr::map_df(species_ids, pull_for_species)
 
-
 }
-
-
-
