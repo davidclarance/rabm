@@ -1,6 +1,6 @@
-#' Extract data for one or multiple species
+#' Extract data for one specie and one location
 #'
-#' @param species_id A character the id of the single specie.
+#' @param specie_id A character the id of the single specie.
 #' @param start_date A character representing the start date from which you want to query the database. It must be in the YYYY-MM-DD format. Defaults to 1 Jan,2019. Example: '2019-01-26'.
 #' @param end_date A character representing the end date to which you want to query the database. It must be in the YYYY-MM-DD format. Defaults to 1 Feb, 2019. Example: '2019-02-26'.
 #' @param region_type Can take one of the following types: country, province, pentad, group, qdgc. Default is 'country'
@@ -20,7 +20,7 @@
 #' # Extract data for a single specie (variable sunbird) and location (Kenya)
 #'
 #' pull_single_specie_location(
-#' species_ids = '762',
+#' specie_id = '762',
 #' start_date = '2019-01-01',
 #' end_date = '2019-02-01',
 #' region_type = 'country',
@@ -31,7 +31,7 @@
 #' }
 #'
 #'
-pull_single_specie_location <- function(species_id,
+pull_single_specie_location <- function(specie_id,
                                         start_date,
                                         end_date,
                                         region_type,
@@ -39,9 +39,9 @@ pull_single_specie_location <- function(species_id,
                                         return_type) {
   # Check Arguments of function
   Check <- ArgumentCheck::newArgCheck()
-  if (length(species_id) > 1 || is.na(as.numeric(species_id))) {
+  if (length(specie_id) > 1 || is.na(as.numeric(specie_id))) {
     ArgumentCheck::addError(
-      msg = "'species_id' is incorrectly specified. Please use a single numeric or character of numeric",
+      msg = "'specie_id' is incorrectly specified. Please use a single numeric or character of numeric",
       argcheck = Check
     )
   }
@@ -63,7 +63,7 @@ pull_single_specie_location <- function(species_id,
   # get number of records to be returned
   return_data_count <- readr::read_csv(
     glue::glue(
-      "http://api.adu.org.za/sabap2/v2/R/{start_date}/{end_date}/{region_type}/{region_id}/count/species/{species_id}?format=csv"
+      "http://api.adu.org.za/sabap2/v2/R/{start_date}/{end_date}/{region_type}/{region_id}/count/species/{specie_id}?format=csv"
     ),
     col_types = readr::cols()
   )$records
@@ -73,10 +73,10 @@ pull_single_specie_location <- function(species_id,
   }
 
   if (return_data_count > 0) {
-    print(glue::glue("Pulling data for {species_id} and for location {region_id}"))
+    print(glue::glue("Pulling data for {specie_id} and for location {region_id}"))
     readr::read_csv(
       glue::glue(
-        "http://api.adu.org.za/sabap2/v2/R/{start_date}/{end_date}/{region_type}/{region_id}/{return_type}/species/{species_id}?format=csv"
+        "http://api.adu.org.za/sabap2/v2/R/{start_date}/{end_date}/{region_type}/{region_id}/{return_type}/species/{specie_id}?format=csv"
       ),
       col_types = readr::cols()
     ) %>% add_column(region_id = region_id)

@@ -1,6 +1,6 @@
-#' Extract data for one or multiple species
+#' Extract all data of one observer at one location
 #'
-#' @param observer_ids A character that represent the ADU number that you want to query the database for. Example: observer_id = '10723'
+#' @param observer_id A character that represent the ADU number that you want to query the database for. Example: observer_id = '10723'
 #' @param start_date A character representing the start date from which you want to query the database. It must be in the YYYY-MM-DD format. Defaults to 1 Jan,2019. Example: '2019-01-26'.
 #' @param end_date A character representing the end date to which you want to query the database. It must be in the YYYY-MM-DD format. Defaults to 1 Feb, 2019. Example: '2019-02-26'.
 #' @param region_type Can take one of the following types: country, province, pentad, group, qdgc. Default is 'country'
@@ -20,7 +20,7 @@
 #' # Extract data for a single specie (variable sunbird) and location (Kenya)
 #'
 #' pull_single_observer_location(
-#' species_ids = '762',
+#' observer_id = '762',
 #' start_date = '2019-01-01',
 #' end_date = '2019-02-01',
 #' region_type = 'country',
