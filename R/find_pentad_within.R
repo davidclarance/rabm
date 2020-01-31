@@ -1,8 +1,8 @@
-#' Find a specific species or a group of species from a species list
+#' Find the pentad overlapping a given shape
 #'
-#' @param coordinates A dataframe of coordinate with
+#' @param coordinates A dataframe of coordinates of a shape. See `sp::Polygon` for valid coordinate structure
 #'
-#' @return list of pentad string
+#' @return list of pentad code string
 #'
 #' @export
 #'
@@ -68,14 +68,12 @@ find_pentad_within <- function(coordinates,
   # Select only the pentads which are inside
   pentads_inside <- pentads_possible_poly[pentads_id]
 
-
   pentads_coord <- sp::coordinates(pentads_inside)+0.1
 
   pid <- sapply(slot(pentads_inside, "polygons"), function(x) slot(x, "ID"))
   p.df <- data.frame( ID=1:length(pentads_inside), row.names = pid)
   p <- sp::SpatialPolygonsDataFrame(pentads_inside, p.df)
   p@data$pentad_name <- find_pentad(data.frame(lat=pentads_coord[,1],lon=pentads_coord[,2]))
-
 
 
   if (plotting){

@@ -1,8 +1,8 @@
-#' Find a specific species or a group of species from a species list
+#' Find the pentad code of GPS coordinate
 #'
-#' @param coordinates A dataframe of coordinate with
+#' @param coordinates A dataframe of coordinate or coordinates
 #'
-#' @return list of pentad string
+#' @return list of pentad code string
 #'
 #' @export
 #'
@@ -53,12 +53,12 @@ find_pentad <- function(coordinates) {
     letter
   }
 
-  coordinates %>% rowwise() %>%
-    mutate(lat = ifelse(is.factor(lat), as.numeric(levels(lat)), lat)) %>%
-    mutate(lon = ifelse(is.factor(lon), as.numeric(levels(lon)), lon)) %>%
-    mutate(letter = format_letter(lat,lon)) %>%
-    mutate(pentad = paste(format_pentad(lat),letter,format_pentad(lon), sep='')) %>%
-    pull()
+  coordinates %>% dplyr::rowwise() %>%
+    dplyr::mutate(lat = ifelse(is.factor(lat), as.numeric(levels(lat)), lat)) %>%
+    dplyr::mutate(lon = ifelse(is.factor(lon), as.numeric(levels(lon)), lon)) %>%
+    dplyr::mutate(letter = format_letter(lat,lon)) %>%
+    dplyr::mutate(pentad = paste(format_pentad(lat),letter,format_pentad(lon), sep='')) %>%
+    dplyr::pull()
 
 }
 
