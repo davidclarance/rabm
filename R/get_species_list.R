@@ -17,6 +17,12 @@ get_species_list <- function(country) {
 
   country <- tolower(country)
 
+  valid_countries <- c("kenya", "southafrica", "nigeria", "botswana", "namibia", "zimbabwe", "lesotho", "swaziland", "mozambique")
+
+  if(! (country %in% valid_countries))  {
+    stop(message =  paste("Sorry; currently this call is only supported for: ", paste(valid_countries, collapse = ', ')))
+  }
+
   readr::read_csv(
     glue::glue(
       "http://api.adu.org.za/sabap2/v2/monthly/species/country/{country}?format=csv"
